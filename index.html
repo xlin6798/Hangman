@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title> Hang Man </title>
+	<style>
+		body {
+			background-image: url("images/bgimage.jpg");
+			text-align: center;
+			-webkit-background-size: cover;
+			-moz-background-size: cover;
+			-o-background-size: cover;
+			background-size: cover;
+		}
+
+		hr {
+			border: 1px solid lightgreen;
+			height: 5px;
+			background-color: darkblue;
+		}
+
+		h1 {
+			font-family: "Brush Script MT", cursive;
+			font-size: 80px;
+			font-style: normal;
+			font-variant: normal;
+			font-weight: 500;
+			line-height: 26px;
+			color: lightgreen;
+		}
+
+		span {
+			font-size: 96px;
+		}
+
+		.button {
+			font-size: 18px;
+			padding: 5px 8px;
+			border: 5px double blue;
+			background-color: skyblue;
+		}
+
+		.guess {
+			padding: 12px 16px;
+			border: 5px double rgb(135, 249, 255);
+			color: lightgreen;
+		}
+
+		#hangman {
+			top: 40px;
+			position: relative;
+			width: 220px;
+			height: 320px;
+			border: 4px solid rgb(135, 249, 255);
+			opacity: .85;
+		}
+
+		#userguess {
+			border: solid blue;
+			color: black;
+			background-color: skyblue;
+		}
+	</style>
+	<script>
+		wordlist = ['HELLO', 'COMPUTER', 'MAGIC', 'SAURON', 'GANDALF', 'Basketball', 'HTML', 'JAVA', 'CSS', 'FRODO', 'HOBBIT', 'STARWARS', 'JEDI', 'LUKE', 'YODA', 'NERD', 'GEEK', 'APPLE', 'WINDOWS', 'IOS', "TURNER"];
+		function initialize() {
+			gamestatus = true;
+			word = chooseword();
+			userchoice = [];
+			userchoicedisplay = "";
+			attemptnumber = 0;
+			key_pressed = [];
+			for (var i = 0; i < word.length; i++) {
+				userchoice.push("_");
+			}
+			document.getElementById("wordanswer").innerHTML = "";
+
+			for (var x = 0; x < userchoice.length; x++) {
+				if (x == 0)
+					userchoicedisplay = userchoice[x];
+
+				if (x != 0)
+					userchoicedisplay = userchoicedisplay + "\xa0" + userchoice[x];
+
+				document.getElementById('hangmantext').innerHTML = userchoicedisplay;
+			}
+		}
+
+		function userattempt(letter) {
+			if (gamestatus == true) {
+				document.getElementById(letter).disabled = true;
+				key_pressed.push(letter);
+				if (word.includes(letter)) {
+					for (var i = 0; i < word.length; i++) {
+						if (word[i] == letter) {
+							userchoice[i] = letter;
+						}
+					}
+				}
+				else {
+					attemptnumber++;
+				}
+				display();
+			}
+		}
+
+		function display() {
+			for (var x = 0; x < userchoice.length; x++) {
+				if (x == 0)
+					userchoicedisplay = userchoice[x];
+
+				if (x != 0)
+					userchoicedisplay = userchoicedisplay + "\xa0" + userchoice[x];
+			}
+			if (!userchoice.includes("_")) {
+				document.getElementById("wordanswer").innerHTML = "You won the game!";
+				gamestatus = false;
+			}
+
+			if (attemptnumber == 10) {
+				document.getElementById("wordanswer").innerHTML = "You lost the game! The correct answer is " + word;
+				gamestatus = false;
+			}
+			else {
+				if (userchoice.includes("_"))
+					document.getElementById("wordanswer").innerHTML = "You have not yet solve the puzzle";
+			}
+
+			document.getElementById('hangman').src = "images/" + attemptnumber + ".jpg";
+			document.getElementById('hangmantext').innerHTML = userchoicedisplay;
+		}
+
+		function chooseword() {
+			return wordlist[getRandomInteger(0, wordlist.length - 1)];
+		}
+
+		function submitguess() {
+			if (gamestatus == true) {
+				var x = document.getElementById('userguess').value;
+				if (x.toUpperCase() == word.toUpperCase()) {
+					for (var x = 0; x < word.length; x++) {
+						if (x == 0)
+							userchoicedisplay = word[x];
+
+						if (x != 0)
+							userchoicedisplay = userchoicedisplay + "\xa0" + word[x];
+					}
+					document.getElementById('hangmantext').innerHTML = userchoicedisplay;
+					document.getElementById("wordanswer").innerHTML = "You won the game!";
+					gamestatus = false;
+				}
+				else {
+					attemptnumber++;
+					display();
+				}
+			}
+		}
+
+		function reset() {
+			for (var i = 0; i < key_pressed.length; i++) {
+				document.getElementById(key_pressed[i]).disabled = false;
+			}
+			document.getElementById('hangman').src = "images/0.jpg";
+			initialize();
+		}
+
+		function getRandomInteger(lower, upper) {
+			multiplier = upper - (lower - 1);
+			rnd = parseInt(Math.random() * multiplier) + lower;
+			return rnd;
+		}
+	</script>
+</head>
+
+<body onload="initialize();">
+	<h1> HangMan </h1>
+	<hr />
+	<span class="guess" id="hangmantext" style="margin-right: 50px;"> </span> 
+	<image id="hangman" src="images/0.jpg" /> <br /> <br />
+	<span style="font-size:48px;" id="wordanswer"> </span> <br />
+	<hr /> <br />
+	<button id="Q" class="button" onclick="userattempt('Q');"> Q </button class="button">
+	<button id="W" class="button" onclick="userattempt('W');"> W </button class="button">
+	<button id="E" class="button" onclick="userattempt('E');"> E </button class="button">
+	<button id="R" class="button" onclick="userattempt('R');"> R </button class="button">
+	<button id="T" class="button" onclick="userattempt('T');"> T </button class="button">
+	<button id="Y" class="button" onclick="userattempt('Y');"> Y </button class="button">
+	<button id="U" class="button" onclick="userattempt('U');"> U </button class="button">
+	<button id="I" class="button" onclick="userattempt('I');"> I </button class="button">
+	<button id="O" class="button" onclick="userattempt('O');"> O </button class="button">
+	<button id="P" class="button" onclick="userattempt('P');"> P </button class="button"> <br /> <br />
+	<button id="A" class="button" onclick="userattempt('A');"> A </button class="button">
+	<button id="S" class="button" onclick="userattempt('S');"> S </button class="button">
+	<button id="D" class="button" onclick="userattempt('D');"> D </button class="button">
+	<button id="F" class="button" onclick="userattempt('F');"> F </button class="button">
+	<button id="G" class="button" onclick="userattempt('G');"> G </button class="button">
+	<button id="H" class="button" onclick="userattempt('H');"> H </button class="button">
+	<button id="J" class="button" onclick="userattempt('J');"> J </button class="button">
+	<button id="K" class="button" onclick="userattempt('K');"> K </button class="button">
+	<button id="L" class="button" onclick="userattempt('L');"> L </button class="button"> <br /> <br />
+	<button id="Z" class="button" onclick="userattempt('Z');"> Z </button class="button">
+	<button id="X" class="button" onclick="userattempt('X');"> X </button class="button">
+	<button id="C" class="button" onclick="userattempt('C');"> C </button class="button">
+	<button id="V" class="button" onclick="userattempt('V');"> V </button class="button">
+	<button id="B" class="button" onclick="userattempt('B');"> B </button class="button">
+	<button id="N" class="button" onclick="userattempt('N');"> N </button class="button">
+	<button id="M" class="button" onclick="userattempt('M');"> M </button class="button"> <br /> <br />
+	<input id="userguess" type="text" style="width:30%; font-size: 20px;" placeholder="Please enter your guess here." />
+	<button onclick="submitguess();" class="button"> Submit your guess</button> <br /> <br />
+	<button class="button" onclick="reset();"> Reset </button>
+</body>
+
+</html>
+<!-- All credits go to Xinyi Lin and Saiful Haque-->
+<!-- All credits go to Xinyi Lin and Saiful Haque-->
+<!-- All credits go to Xinyi Lin and Saiful Haque-->
+<!-- All credits go to Xinyi Lin and Saiful Haque-->
+<!-- All credits go to Xinyi Lin and Saiful Haque-->
+<!-- All credits go to Xinyi Lin and Saiful Haque-->
